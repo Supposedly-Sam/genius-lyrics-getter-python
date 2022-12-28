@@ -52,7 +52,6 @@ def getUrl():
 
 def getLyrics():
     for i in range(len(urls)):
-        print(urls[int(i)])
         response = requests.get(urls[int(i)])
         html_doc = response.text
         soup = BeautifulSoup(html_doc, "lxml")
