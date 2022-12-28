@@ -8,6 +8,7 @@ import requests
 import os
 
 songInput = ""
+terminated = 0
 
 
 def getUrl():
@@ -19,11 +20,14 @@ def getUrl():
 
 
 def checkForLyricsFile():
-    if os.path.exists(songInput):
+    if os.path.exists(songInput+".txt"):
         print("Lyrics already exist")
-        user = input("Would you like to override them? (y/n) ")
+        user = input("Would you like to override them? (y/N) ")
         if user == "y":
             os.remove(songInput)
+        else:
+            terminated = 1
+            return
 
 
 def getLyrics(url):
@@ -54,4 +58,5 @@ url = getUrl()
 checkForLyricsFile()
 writeLyricsToFile(getLyrics(url))
 
-print("Lyrics file created")
+while terminated != 0:
+    print("Lyrics file created")
