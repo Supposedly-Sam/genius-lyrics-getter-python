@@ -9,54 +9,62 @@ import os
 
 songInput = ""
 terminated = 0
+path = os.getcwd()
+dir_list = os.listdir(path)
+filenum = 0
+files = []
+songs = []
+urls = []
+lyrics = []
+
+
+def get_files():
+    for x in dir_list:
+        if x.endswith(".mp3"):
+            files.append(x)
+
+
+def list_files():
+    for x in files:
+        print(str(files.index(x)) + " - " + x)
+
+
+def select_files():
+    userInput = [int(x) for x in input(
+        "Enter songs by number (separated by commas): ").split(",")]
+    songs.extend(userInput)
+
+
+def listmp3():
+    get_files()
+    list_files()
+    select_files()
 
 
 def getUrl():
-    audiofile = eyed3.load(songInput+".mp3")
-    artist = audiofile.tag.artist
-    song = audiofile.tag.title + ""
-    meta = artist + "-" + song
-    return "https://genius.com/" + meta.replace(" ", "-") + "-lyrics"
+    for i in range(len(songs)):
+        audiofile = eyed3.load(files[int(i)])
+        artist = audiofile.tag.artist
+        song = audiofile.tag.title + ""
+        meta = artist + "-" + song
+        urls.append("https://genius.com/" + meta.replace(" ", "-") + "-lyrics")
 
 
-def checkForLyricsFile():
-    if os.path.exists(songInput+".txt"):
-        print("Lyrics already exist")
-        user = input("Would you like to override them? (y/N) ")
-        if user == "y":
-            os.remove(songInput)
-        else:
-            terminated = 1
-            return
+def getLyrics():
+    for i in range(len(urls)):
+        print(urls[int(i)])
+        response = requests.get(urls[int(i)])
+        html_doc = response.text
+        soup = BeautifulSoup(html_doc, "lxml")
+        lyric = soup.find(attrs={"data-lyrics-container": "true"})
+        for br in lyric.find_all("br"):
+            br.replace_with("\n")
+        filename = str(files[i])
+        lyricsfile = filename[:filename.rfind(".")]
+        with open(lyricsfile+".txt", "a", encoding='utf-8') as f:
+            f.write(lyric.text)
 
 
-def getLyrics(url):
-    response = requests.get(url)
-    html_doc = response.text
-    soup = BeautifulSoup(html_doc, "lxml")
-    lyrics = soup.find(attrs={"data-lyrics-container": "true"})
-    for br in lyrics.find_all("br"):
-        br.replace_with("\n")
-    return lyrics.text
-
-
-def writeLyricsToFile(lyrics):
-    song = songInput+".txt"
-    with open(songInput+".txt", "a", encoding='utf-8') as f:
-        f.write(lyrics)
-
-
-while True:
-    songInput = input(
-        "Type in the filename of the song you want lyrics for: ")
-    song = songInput + ".mp3"
-    if not os.path.exists(songInput+".mp3"):
-        print("That file does not exist. Check the name for typos.")
-    else:
-        break
+listmp3()
 url = getUrl()
-checkForLyricsFile()
-writeLyricsToFile(getLyrics(url))
-
-while terminated != 0:
-    print("Lyrics file created")
+getLyrics()
