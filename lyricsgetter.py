@@ -1,11 +1,12 @@
+import os
 from dataclasses import replace
 from fileinput import filename
 from re import T
 from urllib import response
+
 import eyed3
-from bs4 import BeautifulSoup
 import requests
-import os
+from bs4 import BeautifulSoup
 
 songInput = ""
 terminated = 0
