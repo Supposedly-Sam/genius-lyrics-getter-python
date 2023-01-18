@@ -19,7 +19,7 @@ jobs:
           spec: 'lyricsgetter.py'
           requirements: 'requirements.txt'
           upload_exe_with_name: 'lyricsGetter'
-          options: --name "lyricsGetter", --windowed
+          options: --onefile, --name "lyricsGetter", --windowed
           
   pyinstaller-build-linux:
     runs-on: ubuntu-latest
@@ -31,4 +31,16 @@ jobs:
           spec: 'lyricsgetter.py'
           requirements: 'requirements.txt'
           upload_exe_with_name: 'lyricsGetter'
-          options: --one-file --name "lyricsGetter", --windowed
+          options: --onefile --name "lyricsGetter", --windowed
+
+  pyinstaller-build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Create Executable
+        uses: sayyid5416/pyinstaller@v1
+        with:
+          python_ver: '3.10.9'
+          spec: 'lyricsgetter.py'
+          requirements: 'requirements.txt'
+          upload_exe_with_name: 'lyricsGetter'
+          options: --onefile --name "lyricsGetter", --windowed
